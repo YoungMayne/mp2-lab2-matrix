@@ -241,7 +241,7 @@ TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType>>(s) {
 	if (s > MAX_MATRIX_SIZE || s < 0)
 		throw "Creating matrix error!";
 
-	for (int i = 0; i < size; i++)
+	for (int i = 0; i < size; ++i)
 		this->pVector[i] = TVector<ValType>(s, i);
 } /*-------------------------------------------------------------------------*/
 
