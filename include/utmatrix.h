@@ -64,9 +64,9 @@ TVector<ValType>::TVector(int s, int si) {
 	if (s > MAX_VECTOR_SIZE || s < 0 || si < 0)
 		throw "Creating vector error!";
 
-	pVector = new ValType[s];
-	size = s;
 	startIndex = si;
+	size = s;
+	pVector = new ValType[size];
 	for (int i = 0; i < size; ++i)
 		pVector[i] = 0;
 } /*-------------------------------------------------------------------------*/
@@ -226,10 +226,6 @@ public:
 	{
 		for (int i = 0; i < mt.size; i++)
 		{
-			for (int j = 0; j < i; j++)// цикл для отступа
-			{
-				out << "  ";
-			}
 			out << mt.pVector[i] << endl;
 		}
 		return out;
@@ -274,8 +270,8 @@ bool TMatrix<ValType>::operator!=(const TMatrix<ValType> &mt) const {
 
 template<class ValType>
 TVector<ValType>& TMatrix<ValType>::operator[](int pos) {
-	if(pos < 0 || pos > MAX_MATRIX_SIZE)
-			throw "Unexisting value";
+	if (pos < 0 || pos > MAX_MATRIX_SIZE)
+		throw "Unexisting value";
 	return this->pVector[pos];
 }
 
