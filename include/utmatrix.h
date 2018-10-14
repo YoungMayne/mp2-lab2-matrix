@@ -20,7 +20,7 @@ template <class ValType>
 class TVector
 {
 protected:
-	ValType * pVector;
+	ValType *pVector;
 	int size;       // размер вектора
 	int startIndex; // индекс первого элемента вектора
 public:
@@ -53,8 +53,10 @@ public:
 	}
 	friend ostream& operator<<(ostream &out, const TVector &v)
 	{
+		for (int i = 0; i < v.startIndex; i++)
+			out << '0' << "\t";
 		for (int i = 0; i < v.size; i++)
-			out << v.pVector[i] << ' ';
+			out << v.pVector[i] << "\t";
 		return out;
 	}
 };
@@ -64,11 +66,11 @@ TVector<ValType>::TVector(int s, int si) {
 	if (s > MAX_VECTOR_SIZE || s < 0 || si < 0)
 		throw "Creating vector error!";
 
-	pVector = new ValType[s];
-	size = s;
-	startIndex = si;
+	this->startIndex = si;
+	this->size = s - startIndex;
+	pVector = new ValType[size];
 	for (int i = 0; i < size; ++i)
-		pVector[i] = 0;
+		pVector[i] = {};
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> //конструктор копирования
@@ -76,7 +78,7 @@ TVector<ValType>::TVector(const TVector<ValType> &v) {
 	size = v.size;
 	startIndex = v.startIndex;
 
-	pVector = new ValType[this->size];
+	pVector = new ValType[size];
 
 	for (int i = 0; i < v.size; ++i)
 		pVector[i] = v.pVector[i];
@@ -91,7 +93,7 @@ template <class ValType> // доступ
 ValType& TVector<ValType>::operator[](int pos) {
 	if (pos < 0 || pos > MAX_MATRIX_SIZE)
 		throw "Unexisting value";
-	return pVector[pos];
+	return pVector[pos - startIndex];
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> // сравнение
@@ -211,7 +213,6 @@ public:
 	TMatrix(const TVector<TVector<ValType> > &mt); // преобразование типа
 	bool operator==(const TMatrix &mt) const;      // сравнение
 	bool operator!=(const TMatrix &mt) const;      // сравнение  
-	TVector<ValType>& operator[](int pos);
 	TMatrix& operator= (const TMatrix &mt);        // присваивание
 	TMatrix  operator+ (const TMatrix &mt);        // сложение
 	TMatrix  operator- (const TMatrix &mt);        // вычитание
@@ -225,25 +226,21 @@ public:
 	friend ostream & operator<<(ostream &out, const TMatrix &mt)
 	{
 		for (int i = 0; i < mt.size; i++)
-		{
-			for (int j = 0; j < i; j++)// цикл для отступа
-			{
-				out << "  ";
-			}
 			out << mt.pVector[i] << endl;
-		}
 		return out;
 	}
 };
 
 template <class ValType>
-TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType>>(s) {
-	if (s > MAX_MATRIX_SIZE || s < 0)
-		throw "Creating matrix error!";
+TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType> >(s)
+{
+	if (s < 0 || s > MAX_MATRIX_SIZE)
+		throw("error");
+	size = s;
+	for (int i = 0; i < s; ++i)
+		pVector[i] = TVector<ValType>(s, i);
 
-	for (int i = 0; i < size; i++)
-		this->pVector[i] = TVector<ValType>(s, i);
-} /*-------------------------------------------------------------------------*/
+}  /*-------------------------------------------------------------------------*/
 
 template <class ValType> // конструктор копирования
 TMatrix<ValType>::TMatrix(const TMatrix<ValType> &mt) :
@@ -271,13 +268,6 @@ template <class ValType> // сравнение
 bool TMatrix<ValType>::operator!=(const TMatrix<ValType> &mt) const {
 	return !(*this == mt);
 } /*-------------------------------------------------------------------------*/
-
-template<class ValType>
-TVector<ValType>& TMatrix<ValType>::operator[](int pos) {
-	if(pos < 0 || pos > MAX_MATRIX_SIZE)
-			throw "Unexisting value";
-	return this->pVector[pos];
-}
 
 template <class ValType> // присваивание
 TMatrix<ValType>& TMatrix<ValType>::operator=(const TMatrix<ValType> &mt) {
