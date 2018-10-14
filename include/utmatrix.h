@@ -53,8 +53,10 @@ public:
 	}
 	friend ostream& operator<<(ostream &out, const TVector &v)
 	{
-		for (int i = 0; i < v.size; i++)
-			out << v.pVector[i] << ' ';
+		for (int i = 0; i < v.startIndex; i++)
+			out << '0' << "\t";
+		for (int i = v.startIndex; i < v.size; i++)
+			out << v.pVector[i] << "\t";
 		return out;
 	}
 };
@@ -67,8 +69,6 @@ TVector<ValType>::TVector(int s, int si) {
 	startIndex = si;
 	size = s;
 	pVector = new ValType[size];
-	for (int i = 0; i < size; ++i)
-		pVector[i] = 0;
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> //конструктор копирования
