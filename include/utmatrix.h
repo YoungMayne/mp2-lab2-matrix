@@ -9,6 +9,7 @@
 #define __TMATRIX_H__
 
 #include <iostream>
+#include <cmath>
 
 using namespace std;
 
@@ -22,7 +23,7 @@ class TVector
 protected:
 	ValType * pVector;
 	int size;       // размер вектора
-	int startIndex; // индекс первого элемента вектора
+	int startIndex = 0; // индекс первого элемента вектора
 public:
 	TVector(int s = 10, int si = 0);
 	TVector(const TVector &v);                // конструктор копирования
@@ -55,7 +56,7 @@ public:
 	{
 		for (int i = 0; i < v.startIndex; i++)
 			out << '0' << "\t";
-		for (int i = v.startIndex; i < v.size; i++)
+		for (int i = 0; i < v.size; i++)
 			out << v.pVector[i] << "\t";
 		return out;
 	}
@@ -63,12 +64,14 @@ public:
 
 template <class ValType>
 TVector<ValType>::TVector(int s, int si) {
-	if (s > MAX_VECTOR_SIZE || s < 0 || si < 0)
+	if (s > MAX_VECTOR_SIZE || s < 0 || si < 0 || s < si)
 		throw "Creating vector error!";
 
 	startIndex = si;
-	size = s;
+	size = s - startIndex;
 	pVector = new ValType[size];
+	for (int i = 0; i < size; ++i)
+		pVector[i] = {};
 } /*-------------------------------------------------------------------------*/
 
 template <class ValType> //конструктор копирования
@@ -225,21 +228,20 @@ public:
 	friend ostream & operator<<(ostream &out, const TMatrix &mt)
 	{
 		for (int i = 0; i < mt.size; i++)
-		{
 			out << mt.pVector[i] << endl;
-		}
 		return out;
 	}
 };
 
 template <class ValType>
-TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType>>(s) {
-	if (s > MAX_MATRIX_SIZE || s < 0)
-		throw "Creating matrix error!";
-
-	for (int i = 0; i < size; ++i)
-		this->pVector[i] = TVector<ValType>(s, i);
-} /*-------------------------------------------------------------------------*/
+TMatrix<ValType>::TMatrix(int s) : TVector<TVector<ValType> >(s)
+{
+    if (s<0 || s>MAX_MATRIX_SIZE)
+        throw("error");
+	size = s;
+    for (int i = 0; i < s; i++)
+        pVector[i] = TVector<ValType>(s, i);
+}  /*-------------------------------------------------------------------------*/
 
 template <class ValType> // конструктор копирования
 TMatrix<ValType>::TMatrix(const TMatrix<ValType> &mt) :
